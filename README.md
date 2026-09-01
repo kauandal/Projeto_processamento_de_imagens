@@ -2,6 +2,8 @@
 ## Leitura automatica de placas de carro
 #### Alunos: Gustavo Odilon da Costa, João Vitor Loch Martins, Kauan Rocha Dalfovo
 
+Link da apresentação: https://youtu.be/FeMPxT-Z_Ko
+
 ### Contexto e Problema Investigado
 Com o aumento do fluxo de veículos nas vias e nas entradas e saídas de estabelecimentos, o monitoramento desse fluxo vem se tornando cada vez mais importante, tanto por questões de segurança, como para fiscalizar rodovias e identificar carros que cometem infrações de transito, quanto para facilitar processos de empresas, como a cobrança de estacionamento ou controle de acesso a condominios. O monitoramento via cameras nesse contexto supre uma grande lacuna, porém a dependencia de pessoas para monitorar esses casos abre precedentes para falhas e erros humanos. Para tirar essa responsabilidade do olho humano uma alternativa é o ALPR (Automatic Licence Plate Recognition) uma ferramenta que automaticamente detecta uma placa de um veículo e lê seu conteúdo.
 
@@ -19,4 +21,30 @@ O conjunto de dados usados para o treinamento do modelo de IA e a validação do
 
 Link do github do dataset: https://github.com/raysonlaroca/rodosol-alpr-dataset
 
-Link da apresentação: https://youtu.be/FeMPxT-Z_Ko
+### Estrutura do Projeto
+
+|   README.md
+|   
++---Data
+|   +---Datasets
+|   \---results
++---Models
+|   +---Deteccao_placa
+|   +---Leitura_placa
+|   \---Pre_treinado
+\---src
+    |   main.ipynb
+    |   
+    +---deteccao
+    +---ocr
+    +---pre_processamento
+    +---treinamento_modelos
+    \---utils
+
+Data: O dataset será separado em duas pastas, 'train' e 'test, dentro da pasta 'Datasets' para separar um conjunto para o treinamento da IA e um conjunto para o teste do modelo. Essa divisão será feita em uma proporção 80/20. Os resultados posteriores com imagens zero-shot serão armazenados em 'results'
+
+Models: Será a pasta para o armazenamento dos modelos. Será feita uma discriminação entre modelos pré-treinados e os que passaram por fine-tunning. Também serão separados os modelos destinados a detecção da placa na imagem e os destinados a leitura dos caracteres presentes na placa
+
+src: Será a pasta da implementação dos códigos do projeto, aqui serão implementados os códigos destinados ao processamento das imagens, treinamento dos modelos, implementação dos pipelines etc.
+
+'main.ipynb' será o arquivo para a interação do usuário com o sistema, servindo como um notebook para a abstração dos codigos para serem realizados testes de forma facil apenas chamando as funções de um arquivo centralizado
