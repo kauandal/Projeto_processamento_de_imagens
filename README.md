@@ -18,3 +18,4 @@ O sistema será feito em Python, usará modelos de IA pré-treinados YOLO para f
 O conjunto de dados usados para o treinamento do modelo de IA e a validação dos resultados do sistema será o RodoSol-ALPR, um dataset brasileiro coletado pela UFPR em paradas de pedágio ao longo da ES-060 no Espirito Santo. O Dataset conta com 20.000 imagens de Carros, Motos e Caminhões com anotações das coordenadas das bordas da placa (Canto inferior esquerdo e canto superior direito), se a placa é no padrão Brasileiro ou Mercosul, e a combinação de letras e numeros escrita na placa. O Dataset já foi obtido através do contato do aluno João Vitor Loch Martins com os pesquisadores do Dataset e foi assinado um "license-agreement" para o uso academico dos dados. 
 
 Link do github do dataset: https://github.com/raysonlaroca/rodosol-alpr-dataset
+Link da apresentação: https://youtu.be/FeMPxT-Z_Ko
