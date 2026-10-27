@@ -1,1 +1,11 @@
 Data/Datasets/*
+!Data/Datasets/.gitkeep
+
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+runs/
+Models/Deteccao_placa/*/
+Models/Leitura_placa/*/
