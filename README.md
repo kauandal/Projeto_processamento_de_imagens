@@ -128,7 +128,7 @@ Pré-requisito: dataset preparado em `Data/Datasets` conforme [docs/dados.md](do
 | Comando | `docker run` da seção Execução |
 | Saída no console | `RESULTADO FINAL - PLACA DETECTADA: <texto>` |
 | Saída em arquivo | `Data/results/resultado_final.jpg` com detecção, recorte e placa processada |
-| Texto esperado | `[PENDENTE: texto anotado em img_000002.txt]` |
+| Texto esperado | `PPC5431` (campo `plate` da anotação original; carro, placa no padrão brasileiro antigo) |
 
 ### Resultados
 `[PENDENTE: resumo dos indicadores e link para a seção 6 de docs/relatorio_m2.md]`

@@ -46,7 +46,9 @@ RodoSol-ALPR: 20.000 imagens de câmeras fixas de pedágio da ES-060 (ES), carro
 
 ### 3.2 Quantidade usada e critérios de seleção
 
-`[PENDENTE: quantidade efetiva no treino e no teste do detector; quantidade e critério do subconjunto usado nos experimentos de pré-processamento]`
+Detector: 4.000 imagens em `test` e `[PENDENTE: confirmar; esperado 16.000]` em `train`, obtidas por divisão aleatória 80/20 dos quatro subconjuntos.
+
+`[PENDENTE: quantidade e critério do subconjunto usado nos experimentos de pré-processamento]`
 
 ### 3.3 Características e condições de aquisição
 
@@ -63,11 +65,11 @@ RodoSol-ALPR: 20.000 imagens de câmeras fixas de pedágio da ES-060 (ES), carro
 
 ### 3.5 Referência de avaliação
 
-As referências são as anotações do próprio RodoSol-ALPR, produzidas pelos autores do dataset: os quatro cantos da placa (referência de localização) e o texto da placa (referência de leitura). O grupo não produziu anotações próprias e não revisou a qualidade das anotações; essa é uma limitação da avaliação.
+As referências são as anotações do próprio RodoSol-ALPR, produzidas pelos autores do dataset: os quatro cantos da placa, campo `corners` (referência de localização), e o texto da placa, campo `plate` (referência de leitura). Formato e exemplo em [dados.md, seção 5](dados.md#5-formato-das-anotações). O grupo não produziu anotações próprias e não revisou a qualidade das anotações; essa é uma limitação da avaliação.
 
 ### 3.6 Divisão entre ajuste e avaliação
 
-Detector: divisão aleatória 80/20 em `train` e `test`, sem semente. `[PENDENTE: João confirmar qual conjunto foi usado como validação no treino]`
+Detector: divisão aleatória 80/20 em `train` e `test`, sem semente. O conjunto `test` (4.000 imagens) foi usado também como validação durante o treino, para a parada antecipada e para a escolha do `best.pt`. Não há, portanto, conjunto de teste independente para o detector: as métricas de localização obtidas nesse conjunto são tratadas neste relatório como métricas de validação, possivelmente otimistas. A correção (divisão oficial com validação separada) está no plano da M3.
 
 Pré-processamento (método sem treino): parâmetros escolhidos em `Data/splits/ajuste_ids.txt` e avaliação final em `Data/splits/avaliacao_ids.txt`, sem interseção entre as listas. `[PENDENTE: preencher as listas]`
 
