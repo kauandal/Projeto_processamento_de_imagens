@@ -82,13 +82,13 @@ Link do github do dataset: https://github.com/raysonlaroca/rodosol-alpr-dataset
 ```
 
 ### Instalação
-
-```bash
+Rode o seguinte comando no cmd na raiz do projeto:
+```docker build -t alpr-projeto .
 ```
 
 ### Execução
-
-```bash
+Execute o seguinte comando na raiz do projeto:
+```docker run --name execucao-alpr -v "${PWD}/Data/results:/app/Data/results" alpr-projeto
 ```
 
 ### Exemplo Mínimo

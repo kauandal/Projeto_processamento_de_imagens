@@ -9,7 +9,12 @@ RAIZ_PROJETO = Path(__file__).resolve().parent.parent
 
 caminho_modelo = RAIZ_PROJETO / 'Models' / 'Deteccao_placa' / 'best.pt'
 caminho_imagem = RAIZ_PROJETO / 'Data' / 'Datasets' / 'test' / 'images' / 'img_000002.jpg'
+caminho_resultado = RAIZ_PROJETO / 'Data' / 'results' / 'resultado_final.jpg'
 
+# Garante que a pasta de resultados exista
+caminho_resultado.parent.mkdir(parents=True, exist_ok=True)
+
+print("[SISTEMA] Iniciando carregamento do modelo e leitura da imagem...")
 modelo_yolo = YOLO(str(caminho_modelo))
 img_original = cv2.imread(str(caminho_imagem))
 
@@ -18,7 +23,8 @@ if img_original is None:
 
 img_rgb = cv2.cvtColor(img_original, cv2.COLOR_BGR2RGB)
 
-resultados = modelo_yolo.predict(img_original, conf=0.5)
+print("[SISTEMA] Realizando inferencia na imagem...")
+resultados = modelo_yolo.predict(img_original, conf=0.5, verbose=False)
 
 if len(resultados[0].boxes) > 0:
     box = resultados[0].boxes[0]
@@ -28,6 +34,7 @@ if len(resultados[0].boxes) > 0:
     
     placa_pronta = preprocessar_para_ocr(placa_recortada)
     
+    print("[SISTEMA] Extraindo texto via OCR...")
     texto_placa = extrair_texto(placa_pronta)
     
     fig, ax = plt.subplots(1, 3, figsize=(15, 5))
@@ -47,8 +54,11 @@ if len(resultados[0].boxes) > 0:
     ax[2].axis('off')
     
     plt.tight_layout()
-    plt.show()
+    plt.savefig(str(caminho_resultado))
     
-    print(f"Placa detectada: {texto_placa}")
+    print("----------------------------------------")
+    print(f"RESULTADO FINAL - PLACA DETECTADA: {texto_placa}")
+    print(f"Imagem de analise salva em: {caminho_resultado}")
+    print("----------------------------------------")
 else:
     print("Nenhuma placa detectada na imagem.")

@@ -1,5 +1,5 @@
-opencv-python
+opencv-python-headless
 numpy
 matplotlib
-ultralytics
+ultralytics==8.3.163
 pytesseract
