@@ -4,7 +4,7 @@ import shutil
 import random
 from pathlib import Path
 
-DATASET_ORIGINAL = Path(r"C:\Trabalho\Dataset_placasBR\images") 
+DATASET_ORIGINAL = Path(r"D:\Faculdade\12 semestre\processamento de imagens\projeto\Dataset_cru\images") 
 
 ROOT_DIR_PROJETO = Path(".") 
 DATASET_YOLO = ROOT_DIR_PROJETO / "Data" / "Datasets"

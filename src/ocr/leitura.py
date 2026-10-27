@@ -1,9 +1,6 @@
-# Instale o tesseract no sistema operacional e depois: pip install pytesseract
 import pytesseract
 import re
-
-# Ajuste o caminho do executável caso esteja no Windows
-# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 def extrair_texto(imagem_processada):
     

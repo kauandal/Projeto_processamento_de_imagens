@@ -1,14 +1,21 @@
 import cv2
 import matplotlib.pyplot as plt
 from ultralytics import YOLO
-from src.pre_processamento.filtros import preprocessar_para_ocr
-from src.ocr.leitura import extrair_texto
+from pre_processamento.filtros import preprocessar_para_ocr
+from ocr.leitura import extrair_texto
+from pathlib import Path
 
-caminho_modelo = 'Models/Deteccao_placa/yolov8_rodosol/weights/best.pt'
-modelo_yolo = YOLO(caminho_modelo)
+RAIZ_PROJETO = Path(__file__).resolve().parent.parent
 
-caminho_imagem = 'Data/Datasets/test/images/img_010001.jpg'
-img_original = cv2.imread(caminho_imagem)
+caminho_modelo = RAIZ_PROJETO / 'runs' / 'detect' / 'Models' / 'Deteccao_placa' / 'yolov8_rodosol-3' / 'weights' / 'best.pt'
+caminho_imagem = RAIZ_PROJETO / 'Data' / 'Datasets' / 'test' / 'images' / 'img_000002.jpg'
+
+modelo_yolo = YOLO(str(caminho_modelo))
+img_original = cv2.imread(str(caminho_imagem))
+
+if img_original is None:
+    raise FileNotFoundError(f"Imagem não encontrada em: {caminho_imagem}")
+
 img_rgb = cv2.cvtColor(img_original, cv2.COLOR_BGR2RGB)
 
 resultados = modelo_yolo.predict(img_original, conf=0.5)
