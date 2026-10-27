@@ -24,22 +24,44 @@ Com o aumento do fluxo de veículos nas vias e nas entradas e saídas de estabel
 Desenvolver um sistema o qual ao ser fornecido uma imagem detectará as placas de veículos presentes e informará o texto escrito nelas.
 
 ### Objetivos da M2
+1. Localizar a placa com um detector YOLOv8n ajustado ao RodoSol-ALPR e medir a localização contra os cantos anotados (IoU).
+2. Preparar a região da placa com realce, suavização, binarização, correção de inclinação e morfologia, gerando saídas intermediárias.
+3. Comparar de forma controlada configurações de binarização e de morfologia.
+4. Planejar para a M3 a segmentação de caracteres por componentes conectados e a avaliação da leitura.
+
+Detalhes em [docs/proposta.md](docs/proposta.md).
 
 ### Entradas e Saídas
+
+| Item | Descrição |
+|---|---|
+| Entrada | Imagem colorida de um veículo (JPEG do RodoSol-ALPR) |
+| Saídas intermediárias | Caixa da placa, recorte, placa binarizada e após morfologia |
+| Saída final | Texto da placa no console e figura `Data/results/resultado_final.jpg` com as etapas |
 
 ### Estágio Atual
 
 | Etapa | Status |
 |---|---|
+| Preparação do dataset no formato YOLO | Implementado |
+| Treino do detector YOLOv8n | Implementado, modelo em `Models/Deteccao_placa/best.pt` |
+| Localização e recorte da placa | Implementado |
+| Pré-processamento da placa (CLAHE, bilateral, limiar adaptativo, inclinação, fechamento) | Implementado |
+| Leitura com Tesseract | Implementado, uso demonstrativo |
+| Execução em Docker | Implementado |
+| Avaliação de localização (IoU) | `[PENDENTE]` |
+| Experimentos de binarização e morfologia | `[PENDENTE]` |
+| Segmentação de caracteres e descritores | Planejado para a M3 |
+| Avaliação da leitura | Planejado para a M3 |
 
 ### Resumo da Solução Proposta
-A solução proposta é um pipeline onde o usuário pode fornecer uma imagem (a principio uma imagem mas pode evoluir para um vídeo) contendo algum veículo e o sistema fará um pré-processamento da imagem, binarizando ajustando inclinação e filtrando ruídos, e então usará uma IA treinada para fazer o recorte do trecho da imagem contendo a placa do veículo, para então com a imagem da placa separada ser feita a leitura dos caracteres de identificação da placa.
+O usuário fornece uma imagem de veículo. O detector YOLOv8n ajustado localiza a placa, a região é recortada e passa por realce de contraste (CLAHE), filtro bilateral, limiar adaptativo, correção de inclinação e fechamento morfológico. A placa preparada é lida pelo Tesseract. O pipeline completo está descrito na seção 4 de [docs/relatorio_m2.md](docs/relatorio_m2.md). A versão da M1, que previa pré-processar a imagem inteira antes da detecção, está preservada no histórico do repositório.
 
 ### Tecnologias usadas
-O sistema será feito em Python, usará modelos de IA pré-treinados YOLO para fazer o fine-tunning, visto que já existem modelos treinados para a detecção de placas porém não de placas brasileiras. Serão utilizadas as bibliotecas Pillow e CV2 para o processamento das imagens.
+Python 3.11 (imagem Docker), OpenCV para o processamento de imagens, NumPy, Matplotlib para as figuras, Ultralytics 8.3.163 (YOLOv8n) para a detecção e Tesseract com pytesseract para a leitura. O ambiente é executado em Docker. Versões das bibliotecas em [requirements.txt](requirements.txt). `[PENDENTE: fixar as versões das demais bibliotecas]`
 
 ### Conjunto de dados
-O conjunto de dados usados para o treinamento do modelo de IA e a validação dos resultados do sistema será o RodoSol-ALPR, um dataset brasileiro coletado pela UFPR em paradas de pedágio ao longo da ES-060 no Espirito Santo. O Dataset conta com 20.000 imagens de Carros, Motos e Caminhões com anotações das coordenadas das bordas da placa (Canto inferior esquerdo e canto superior direito), se a placa é no padrão Brasileiro ou Mercosul, e a combinação de letras e numeros escrita na placa. O Dataset já foi obtido através do contato do aluno João Vitor Loch Martins com os pesquisadores do Dataset e foi assinado um "license-agreement" para o uso academico dos dados. 
+O conjunto de dados usados para o treinamento do modelo de IA e a validação dos resultados do sistema será o RodoSol-ALPR, um dataset brasileiro coletado pela UFPR em paradas de pedágio ao longo da ES-060 no Espirito Santo. O Dataset conta com 20.000 imagens de carros e motocicletas com anotações dos quatro cantos da placa, se a placa é no padrão Brasileiro ou Mercosul, e a combinação de letras e numeros escrita na placa. O Dataset já foi obtido através do contato do aluno João Vitor Loch Martins com os pesquisadores do Dataset e foi assinado um "license-agreement" para o uso academico dos dados. 
 
 Link do github do dataset: https://github.com/raysonlaroca/rodosol-alpr-dataset
 
@@ -82,15 +104,31 @@ Link do github do dataset: https://github.com/raysonlaroca/rodosol-alpr-dataset
 ```
 
 ### Instalação
-Rode o seguinte comando no cmd na raiz do projeto:
-```docker build -t alpr-projeto .
+Rode o seguinte comando no terminal (PowerShell ou bash) na raiz do projeto:
+
+```bash
+docker build -t alpr-projeto .
 ```
 
 ### Execução
+O dataset não é copiado para a imagem Docker. Ele deve estar em `Data/Datasets` e é montado como volume na execução, junto com a pasta de resultados.
+
 Execute o seguinte comando na raiz do projeto:
-```docker run --name execucao-alpr -v "${PWD}/Data/results:/app/Data/results" alpr-projeto
+
+```bash
+docker run --rm --name execucao-alpr -v "${PWD}/Data/Datasets:/app/Data/Datasets" -v "${PWD}/Data/results:/app/Data/results" alpr-projeto
 ```
 
 ### Exemplo Mínimo
+Pré-requisito: dataset preparado em `Data/Datasets` conforme [docs/dados.md](docs/dados.md).
+
+| Item | Valor |
+|---|---|
+| Entrada | `Data/Datasets/test/images/img_000002.jpg` (definida em `src/main.py`) |
+| Comando | `docker run` da seção Execução |
+| Saída no console | `RESULTADO FINAL - PLACA DETECTADA: <texto>` |
+| Saída em arquivo | `Data/results/resultado_final.jpg` com detecção, recorte e placa processada |
+| Texto esperado | `[PENDENTE: texto anotado em img_000002.txt]` |
 
 ### Resultados
+`[PENDENTE: resumo dos indicadores e link para a seção 6 de docs/relatorio_m2.md]`

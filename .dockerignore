@@ -1,0 +1,15 @@
+.git/
+.gitignore
+.vscode/
+.dockerignore
+Dockerfile
+
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+runs/
+
+Data/Datasets/
+Data/results/
