@@ -7,7 +7,7 @@ from pathlib import Path
 
 RAIZ_PROJETO = Path(__file__).resolve().parent.parent
 
-caminho_modelo = RAIZ_PROJETO / 'runs' / 'detect' / 'Models' / 'Deteccao_placa' / 'yolov8_rodosol-3' / 'weights' / 'best.pt'
+caminho_modelo = RAIZ_PROJETO / 'Models' / 'Deteccao_placa' / 'best.pt'
 caminho_imagem = RAIZ_PROJETO / 'Data' / 'Datasets' / 'test' / 'images' / 'img_000002.jpg'
 
 modelo_yolo = YOLO(str(caminho_modelo))
