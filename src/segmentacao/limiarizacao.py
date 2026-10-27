@@ -1,0 +1,1 @@
+"""Binarização global e adaptativa."""
