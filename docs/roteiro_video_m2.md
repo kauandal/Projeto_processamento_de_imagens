@@ -1,128 +1,93 @@
 # Roteiro do Vídeo M2
 
-> Duração alvo: cerca de 10 minutos. Ritmo de referência: cerca de 140 palavras por minuto. Indicações entre colchetes, como `[MOSTRAR: ...]`, são o que deve aparecer na tela e não devem ser lidas. Trechos `[PENDENTE: ...]` dependem dos resultados dos experimentos.
+> O vídeo da M2 não foi produzido (decisão D12 em [decisoes.md](decisoes.md)). Este roteiro fica como base para o vídeo da M3.
+>
+> Tópicos de fala por bloco. Cada apresentador diz o próprio nome ao começar. Indicações entre colchetes são o que deve aparecer na tela.
 
 | Bloco | Conteúdo | Apresentador | Duração |
 |---|---|---|---|
 | 1 | Evolução desde a M1 | Kauan | 1:00 |
-| 2 | Dados | João | 1:00 |
-| 3 | Pipeline implementado | Gustavo | 1:30 |
+| 2 | Dados | Kauan | 1:00 |
+| 3 | Pipeline implementado | João | 1:30 |
 | 4 | Execução real | João | 1:30 |
 | 5 | Saídas intermediárias | Gustavo | 1:30 |
-| 6 | Comparação experimental | Kauan | 2:00 |
+| 6 | Comparação experimental | Gustavo | 2:00 |
 | 7 | Limitações | Gustavo | 0:45 |
 | 8 | Plano da M3 | Kauan | 0:45 |
 
-## Bloco 1. Evolução desde a M1 (Kauan, 1:00)
+## Bloco 1. Evolução desde a M1 (Kauan)
 
-`[MOSTRAR: README no GitHub, depois a tabela da seção 2 do relatório]`
+[README e tabela da seção 2 do relatório]
 
-Olá, somos o grupo 2 de Processamento de Imagens: eu sou o Kauan, e comigo estão o João e o Gustavo. Nosso projeto é a leitura automática de placas de veículos brasileiros, o chamado ALPR. A ideia é receber a imagem de um veículo, encontrar a placa e informar o texto escrito nela.
+- Grupo 2: Kauan, João e Gustavo. Projeto: leitura automática de placas brasileiras.
+- Entrada: imagem do veículo. Saída: texto da placa.
+- Feedback da M1: escopo amplo, sem métricas, pouco código executável.
+- Na M2: escopo delimitado a imagens de pedágio com uma placa, métricas de acerto definidas, pipeline executando em Docker.
 
-Na M1 recebemos três críticas principais: o escopo estava amplo demais, não havia métricas de sucesso e o repositório quase não tinha código executável. Nesta etapa respondemos a cada uma delas. Delimitamos o escopo para imagens estáticas de câmeras de pedágio, com uma placa por imagem. Definimos como indicadores o IoU da localização e o acerto da leitura. E agora temos um pipeline que executa de ponta a ponta, dentro de um container Docker.
+## Bloco 2. Dados (Kauan)
 
-Toda a resposta ao feedback, item por item, está nesta tabela do relatório, com o arquivo que comprova cada ação. Agora o João vai apresentar os dados.
+[dados.md e um arquivo de anotação aberto]
 
-## Bloco 2. Dados (João, 1:00)
+- RodoSol-ALPR, da UFPR: 20 mil imagens de pedágio da ES-060, carros e motos, placas antigas e Mercosul.
+- Cada imagem tem anotação com os quatro cantos da placa e o texto. Essa é a referência de avaliação.
+- Licença acadêmica, obtida pelo João. O dataset completo fica fora do repositório; uma amostra de 100 imagens está versionada para a execução.
+- Detector: 16 mil imagens de treino e 4 mil de teste.
 
-`[MOSTRAR: repositório oficial do RodoSol-ALPR e depois um arquivo de anotação .txt aberto no editor]`
+## Bloco 3. Pipeline implementado (João)
 
-Usamos o RodoSol-ALPR, um conjunto de dados brasileiro da UFPR, com 20 mil imagens capturadas por câmeras fixas em praças de pedágio da rodovia ES-060, no Espírito Santo. Ele tem carros e motocicletas, com placas no padrão antigo e no padrão Mercosul.
+[diagrama da seção 4.1 do relatório e filtros.py]
 
-Cada imagem vem com um arquivo de anotação. Ele traz os quatro cantos da placa em pixels e o texto da placa. Esses dois campos são a nossa referência: os cantos servem para medir a localização e o texto serve para medir a leitura.
+- Localização: YOLOv8n ajustado ao dataset, confiança mínima 0,5.
+- No recorte: tons de cinza, CLAHE para realçar contraste, filtro bilateral para reduzir ruído sem borrar bordas.
+- Segmentação por limiar adaptativo, correção de inclinação e fechamento morfológico 2x2.
+- Leitura com Tesseract em linha única, letras e números.
+- Segmentação de caracteres e descritores ficam para a M3.
 
-O acesso ao dataset exige um termo de licença para uso acadêmico, que eu assinei em nome do grupo. Por isso as imagens não estão no repositório; documentamos como obtê-las e preparar os dados no arquivo dados.md.
+## Bloco 4. Execução real (João)
 
-Para o treino, dividimos as imagens em 80% para treino e 20% para teste, o que resultou em `[PENDENTE: confirmar, esperado 16.000]` imagens de treino e 4.000 de teste. Agora o Gustavo explica o pipeline.
+[terminal: docker build e docker run do README]
 
-## Bloco 3. Pipeline implementado (Gustavo, 1:30)
+- Tudo em Docker, sem depender da máquina.
+- O main.py roda o pipeline nas 50 imagens de teste e depois o experimento 1.
+- Mostrar o CSV e as figuras gerados em Data/results.
 
-`[MOSTRAR: diagrama da seção 4.1 do relatório e depois o arquivo filtros.py]`
+## Bloco 5. Saídas intermediárias (Gustavo)
 
-O pipeline tem duas partes: localizar a placa e preparar a placa para a leitura.
+[figuras result_img_001101 e result_img_000996]
 
-Para localizar, usamos o YOLOv8n, a menor versão do detector YOLO. Partimos de pesos pré-treinados e fizemos o ajuste com as caixas das placas do RodoSol. O modelo devolve um retângulo em volta da placa, e só aceitamos detecções com confiança acima de 0,5. Esse retângulo faz o papel da segmentação da placa em relação ao resto da imagem.
+- Detecção: o retângulo verde marca a placa.
+- Recorte: todo o processamento acontece só nele.
+- Binarização: caracteres separados do fundo; moldura e faixa da cidade também aparecem.
+- Sucesso: img_001101, placa PPR1476 lida corretamente.
 
-Depois recortamos a placa e aplicamos as técnicas de processamento de imagens. Primeiro convertemos para tons de cinza e aplicamos o CLAHE, uma equalização de histograma por blocos que realça os caracteres quando a iluminação é desigual. Em seguida usamos o filtro bilateral, que reduz o ruído mas preserva as bordas entre caractere e fundo.
+## Bloco 6. Comparação experimental (Gustavo)
 
-A segmentação é feita por limiar adaptativo gaussiano: cada pixel é comparado com a média da sua vizinhança de 19 por 19 pixels. Isso funciona melhor que um limiar único quando uma parte da placa está mais clara que a outra. Depois corrigimos a inclinação e aplicamos um fechamento morfológico com elemento 2 por 2, que fecha pequenas falhas nos traços dos caracteres. Por fim, a placa vai para o Tesseract, configurado para ler uma linha com letras e números.
+[exp01.md e tabela de resultados]
 
-A segmentação dos caracteres individuais e os descritores de forma ficam para a M3. O João vai mostrar a execução.
+- Pergunta: um Otsu simples lê melhor que o pré-processamento completo do pipeline?
+- Mesmas 50 imagens de cars-br, mesmo recorte do YOLO, mesmo OCR, mesma referência.
+- Otsu: 40% de acerto exato e 74,3% por caractere. Pipeline completo: 12% e 48,3%.
+- O adaptativo realça moldura e faixa da cidade, que viram ruído para o OCR.
+- Muitos erros são Q lido como O e D lido como 0, letras parecidas em recortes pequenos.
+- Falha: img_000996, placa vermelha QRC5076, com polaridade invertida.
 
-## Bloco 4. Execução real (João, 1:30)
+## Bloco 7. Limitações (Gustavo)
 
-`[MOSTRAR: gravação de tela, terminal aberto na raiz do projeto]`
+[seção 7 do relatório]
 
-Para garantir que qualquer pessoa consiga executar o projeto, colocamos tudo em Docker. A imagem já instala o Python, o Tesseract e as bibliotecas nas versões que usamos.
+- Placa vermelha com letra branca não é tratada.
+- Moto e Mercosul não foram avaliados no experimento; o OCR lê uma linha só.
+- O teste do detector também foi usado como validação, e o IoU não foi calculado.
 
-`[EXECUTAR: docker build -t alpr-projeto .]`
+## Bloco 8. Plano da M3 (Kauan)
 
-O primeiro passo é construir a imagem com o docker build. Esse comando está no README, na seção de instalação.
+[seção 8 do relatório]
 
-`[EXECUTAR: docker run da seção Execução do README]`
-
-Agora executamos o container. Como as imagens do dataset não podem ir para o repositório, elas não entram na imagem Docker: montamos a pasta do dataset e a pasta de resultados como volumes.
-
-`[MOSTRAR: mensagens do console aparecendo]`
-
-O sistema carrega o modelo treinado, lê a imagem, faz a detecção e depois o OCR. No final ele imprime a placa detectada, que neste caso foi `[PENDENTE: texto lido]`. A placa anotada no dataset é PPC5431.
-
-`[MOSTRAR: abrir Data/results/resultado_final.jpg]`
-
-E aqui está o arquivo gerado na pasta de resultados, com as três etapas lado a lado. O Gustavo vai explicar o que cada uma mostra.
-
-## Bloco 5. Saídas intermediárias (Gustavo, 1:30)
-
-`[MOSTRAR: figuras de docs/figuras, uma etapa por vez. Ajustar a fala ao que as figuras realmente mostram]`
-
-Nesta primeira imagem vemos a detecção do YOLO: o retângulo verde marca onde o modelo encontrou a placa. Comparando com a imagem original, dá para ver que o detector ignora o resto do veículo e o fundo.
-
-Aqui está o recorte da placa. É sobre ele que todo o processamento seguinte acontece, o que reduz bastante a quantidade de informação irrelevante.
-
-Depois do CLAHE, o contraste entre os caracteres e o fundo aumenta, principalmente nas regiões mais escuras da placa. Nesta outra imagem está o resultado do limiar adaptativo: os caracteres viram regiões brancas sobre fundo preto. Vejam que a moldura da placa e algumas manchas também aparecem; é isso que a etapa de componentes vai filtrar na M3.
-
-Após o fechamento morfológico, as pequenas falhas dentro dos traços são preenchidas, e os caracteres ficam mais contínuos. A última imagem é a versão invertida, com texto escuro sobre fundo claro, que é o formato em que o Tesseract funciona melhor.
-
-Agora vamos para um caso difícil. `[MOSTRAR: imagem de caso difícil]` Nesta placa `[PENDENTE: descrever o caso, por exemplo inclinação ou baixo contraste]`, e o resultado foi `[PENDENTE]`. O Kauan apresenta a comparação experimental.
-
-## Bloco 6. Comparação experimental (Kauan, 2:00)
-
-`[MOSTRAR: docs/experimentos/exp01.md e a tabela de resultados]`
-
-A pergunta do nosso experimento foi: o limiar adaptativo melhora a binarização da placa em relação a um limiar global de Otsu?
-
-Comparamos as duas configurações nas mesmas `[PENDENTE: quantidade]` imagens, listadas pelo ID no arquivo avaliacao_ids.txt. Todo o resto ficou constante: o mesmo realce com CLAHE, o mesmo filtro bilateral, a mesma morfologia e o mesmo OCR. A única coisa que mudou foi o método de limiarização.
-
-Para isolar o efeito da binarização, os recortes da placa foram feitos a partir dos cantos anotados, e não da detecção do YOLO. Assim, um erro do detector não interfere no resultado.
-
-O indicador foi o acerto da leitura contra o texto anotado no dataset, medido de duas formas: placas lidas exatamente certas e acerto por caractere.
-
-`[MOSTRAR: tabela]`
-
-O limiar adaptativo obteve `[PENDENTE: resultado]` e o Otsu obteve `[PENDENTE: resultado]`. `[PENDENTE: interpretação, por exemplo em quais tipos de imagem a diferença apareceu]`
-
-`[MOSTRAR: caso de sucesso]` Este é um caso de sucesso: na imagem `[PENDENTE: ID]`, `[PENDENTE: o que funcionou e por quê]`.
-
-`[MOSTRAR: caso de falha]` E este é um caso de falha: na imagem `[PENDENTE: ID]`, `[PENDENTE: o que falhou e por quê]`.
-
-Essa falha mostra que `[PENDENTE: o que a falha ensina e qual decisão ela motiva para a M3]`. O Gustavo fala agora das limitações.
-
-## Bloco 7. Limitações (Gustavo, 0:45)
-
-`[MOSTRAR: seção 7 do relatório ou a tabela de riscos da proposta]`
-
-O pipeline ainda tem limitações claras. As placas de motocicleta têm duas linhas, e o Tesseract está configurado para ler uma linha só, então elas tendem a falhar. A correção de inclinação usa todos os pixels brancos da placa e pode ser enganada pela moldura ou por ruído. O sistema também considera só uma placa por imagem.
-
-Por fim, a divisão entre treino e teste foi aleatória e sem um conjunto de validação separado, o que pode deixar os resultados do detector otimistas. O Kauan apresenta o que vamos fazer na M3.
-
-## Bloco 8. Plano da M3 (Kauan, 0:45)
-
-`[MOSTRAR: tabela da seção 8 do relatório]`
-
-Para a M3, o João vai adotar a divisão oficial do RodoSol e retreinar o detector com validação separada. Eu fico com a avaliação da localização pelo IoU em todo o conjunto de teste e com a avaliação da leitura. O Gustavo vai implementar a segmentação dos caracteres por componentes conectados e corrigir o alinhamento da placa, e o João vai extrair os descritores de forma para filtrar o que não é caractere.
-
-Cada tarefa tem a evidência esperada registrada no relatório. Todo o código e a documentação estão no repositório, com o link no README. Obrigado.
+- João: divisão oficial do dataset, revisão da binarização, segmentação de caracteres e descritores.
+- Gustavo: comparação isolada do limiar, experimento com e sem fechamento, IoU e avaliação por subconjunto.
+- Kauan: relatório final, README e vídeo.
+- Código e documentação no repositório, link no README. Obrigado.
 
 ## Link do vídeo
 
-`[PENDENTE: link do YouTube, não listado]`
+Não produzido na M2.

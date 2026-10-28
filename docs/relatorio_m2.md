@@ -1,7 +1,5 @@
 # Relatório Parcial M2
 
-> Trechos marcados com `[PENDENTE: ...]` dependem de resultados experimentais ou de confirmação da equipe e devem ser preenchidos antes da entrega.
-
 ## Identificação
 
 | Item | Informação |
@@ -9,8 +7,8 @@
 | Projeto | Leitura automática de placas de veículos brasileiros (ALPR) |
 | Integrantes | Gustavo Odilon da Costa, João Vitor Loch Martins, Kauan Rocha Dalfovo |
 | Repositório | https://github.com/kauandal/Projeto_processamento_de_imagens |
-| Commit/tag da entrega | `[PENDENTE]` |
-| Vídeo M2 | `[PENDENTE]` |
+| Commit/tag da entrega | Tag `m2-entrega` |
+| Vídeo M2 | Não produzido na M2 (decisão D12 em [decisoes.md](decisoes.md)) |
 
 ## 1. Síntese do problema e objetivos atuais
 
@@ -27,41 +25,43 @@ A revisão completa da devolutiva está em [revisao_m1_plano_m2.md](../revisao_m
 | Nº | Orientação recebida | Ação tomada | Arquivo/evidência |
 |---:|---|---|---|
 | 1 | Escopo do problema amplo | Escopo delimitado a imagens estáticas do RodoSol-ALPR, uma placa por imagem; vídeo e placas de motocicleta em duas linhas no OCR ficaram fora da M2 | [proposta.md, seção 4](proposta.md#4-escopo) |
-| 2 | Sem amostra verificável do dataset | Origem, licença, obtenção, formato das anotações e preparação documentados; imagens não versionadas por restrição de licença; IDs usados registrados em `Data/splits/` | [dados.md](dados.md), `Data/splits/` `[PENDENTE: preencher IDs]` |
-| 3 | Faltam métricas e critérios de sucesso | Definidos IoU contra os cantos anotados, taxa de localização correta (IoU >= 0,5) e acerto de leitura | [proposta.md, seção 6](proposta.md#6-critérios-de-sucesso), seção 6 deste relatório `[PENDENTE: resultados]` |
+| 2 | Sem amostra verificável do dataset | Origem, licença, obtenção, formato das anotações e preparação documentados; amostra de 100 imagens versionada em `Data/imagens_testes/`; IDs do experimento registrados em `Data/splits/avaliacao_ids.txt` | [dados.md](dados.md), `Data/imagens_testes/`, `Data/splits/` |
+| 3 | Faltam métricas e critérios de sucesso | Definidos IoU contra os cantos anotados, taxa de localização correta (IoU >= 0,5) e acerto de leitura | [proposta.md, seção 6](proposta.md#6-critérios-de-sucesso), seção 6 deste relatório |
 | 4 | Relação entre PDI, YOLO e OCR pouco clara | Pipeline descrito etapa por etapa, com entrada, saída e parâmetros de cada uma | Seções 4 e 5 deste relatório |
 | 5 | Sem baseline executável | Pipeline executável de ponta a ponta com modelo ajustado e execução em Docker | `src/main.py`, `Dockerfile`, `Models/Deteccao_placa/best.pt` |
 | 6 | Repositório com pouco conteúdo executável | Código de preparação de dados, treino, pré-processamento e OCR; dependências e comandos documentados | `src/`, `requirements.txt`, [README.md](../README.md) |
 | 7 | Falta proposta técnica separada do README | Criado `docs/proposta.md` | [proposta.md](proposta.md) |
-| 8 | Subtotal de 55,00/90 na devolutiva | Grupo apontou soma de 56,25/90 e solicitou esclarecimento | `[PENDENTE: registrar resposta do professor]` |
-| 9 | Vídeo pendente com 10/10 pontos | Grupo solicitou confirmação da pontuação | `[PENDENTE: registrar resposta do professor]` |
+| 8 | Subtotal de 55,00/90 na devolutiva | Grupo apontou soma de 56,25/90 e solicitou esclarecimento | Resposta não registrada no repositório |
+| 9 | Vídeo pendente com 10/10 pontos | Grupo solicitou confirmação da pontuação | Resposta não registrada no repositório |
 
-Diferença em relação ao plano da M2: a revisão da M1 previa localizar a placa por segmentação clássica (limiarização, bordas e morfologia). O grupo manteve o detector YOLO, já previsto na proposta da M1, para a localização, e aplicou as técnicas de segmentação e morfologia na região recortada da placa. A justificativa está na decisão D1 de [decisoes.md](decisoes.md). `[PENDENTE: equipe validar a justificativa]`
+Diferença em relação ao plano da M2: a revisão da M1 previa localizar a placa por segmentação clássica (limiarização, bordas e morfologia). O grupo manteve o detector YOLO, já previsto na proposta da M1, para a localização, e aplicou as técnicas de segmentação e morfologia na região recortada da placa. A justificativa está na decisão D1 de [decisoes.md](decisoes.md).
 
 ## 3. Dados e protocolo experimental
 
 ### 3.1 Origem e condições de uso
 
-RodoSol-ALPR: 20.000 imagens de câmeras fixas de pedágio da ES-060 (ES), carros e motocicletas, placas nos padrões brasileiro e Mercosul. Acesso mediante termo de licença para uso acadêmico, assinado pelo grupo. Imagens não versionadas. Detalhes em [dados.md](dados.md).
+RodoSol-ALPR: 20.000 imagens de câmeras fixas de pedágio da ES-060 (ES), carros e motocicletas, placas nos padrões brasileiro e Mercosul. Acesso mediante termo de licença para uso acadêmico, assinado pelo grupo. O dataset completo não é versionado; uma amostra de 100 imagens está em `Data/imagens_testes/` para permitir a execução. Detalhes em [dados.md](dados.md).
 
 ### 3.2 Quantidade usada e critérios de seleção
 
-Detector: 4.000 imagens em `test` e `[PENDENTE: confirmar; esperado 16.000]` em `train`, obtidas por divisão aleatória 80/20 dos quatro subconjuntos.
+Detector: 16.000 imagens em `train` e 4.000 em `test`, obtidas por divisão aleatória 80/20 dos quatro subconjuntos.
 
-`[PENDENTE: quantidade e critério do subconjunto usado nos experimentos de pré-processamento]`
+Experimento 1: 50 imagens de `cars-br` com anotação original, sorteadas por `separar_amostras.py` e versionadas em `Data/imagens_testes/dataset_original` (IDs em `Data/splits/avaliacao_ids.txt`). Pipeline: 50 imagens sorteadas de `test`, versionadas em `Data/imagens_testes/yolo`. O tamanho da amostra foi definido para permitir a execução completa no Docker e a inspeção individual das saídas dentro do prazo da M2.
 
 ### 3.3 Características e condições de aquisição
 
-`[PENDENTE: resolução, período do dia, variação de iluminação, conforme documentação oficial e inspeção das imagens]`
+Imagens coloridas de 1280x720 pixels, de câmeras fixas frontais nas cabines de pedágio. Na anotação de `img_000002`, a placa ocupa cerca de 120x41 pixels, o que limita a resolução disponível para cada caractere. Nas imagens inspecionadas há variação de cor do veículo, de iluminação e de cor da placa, incluindo placas vermelhas de veículos de aluguel.
 
 ### 3.4 Casos típicos e difíceis
 
 | ID da imagem | Subconjunto | Situação |
 |---|---|---|
-| `[PENDENTE]` | | Caso típico |
-| `[PENDENTE]` | | Placa inclinada |
-| `[PENDENTE]` | | Baixo contraste ou iluminação desigual |
-| `[PENDENTE]` | | Motocicleta, placa em duas linhas |
+| `img_003207` | `cars-br` | Caso típico, lido corretamente (`PPW3952`) nas duas configurações |
+| `img_000996` | `cars-br` | Placa vermelha com caracteres brancos, polaridade invertida |
+| `img_001352` | `cars-br` | Confusão entre Q e O (`QRC6770` lido como `ORC6770`) |
+| `img_000224` | `cars-br` | Leitura vazia nas duas configurações |
+
+Placas de motocicleta e Mercosul não fazem parte da amostra do experimento 1.
 
 ### 3.5 Referência de avaliação
 
@@ -71,7 +71,7 @@ As referências são as anotações do próprio RodoSol-ALPR, produzidas pelos a
 
 Detector: divisão aleatória 80/20 em `train` e `test`, sem semente. O conjunto `test` (4.000 imagens) foi usado também como validação durante o treino, para a parada antecipada e para a escolha do `best.pt`. Não há, portanto, conjunto de teste independente para o detector: as métricas de localização obtidas nesse conjunto são tratadas neste relatório como métricas de validação, possivelmente otimistas. A correção (divisão oficial com validação separada) está no plano da M3.
 
-Pré-processamento (método sem treino): parâmetros escolhidos em `Data/splits/ajuste_ids.txt` e avaliação final em `Data/splits/avaliacao_ids.txt`, sem interseção entre as listas. `[PENDENTE: preencher as listas]`
+Pré-processamento (método sem treino): nenhum parâmetro foi ajustado com as imagens de avaliação. Os parâmetros vieram do código do pipeline, por isso `Data/splits/ajuste_ids.txt` está vazio e toda a amostra de `Data/splits/avaliacao_ids.txt` é usada apenas para avaliação.
 
 ## 4. Pipeline implementado
 
@@ -106,8 +106,9 @@ Ponto de entrada: `src/main.py`, executado diretamente ou pelo `Dockerfile`.
 | Morfologia | `filtros.py` | Máscara alinhada | Máscara após fechamento | Elemento retangular 2x2 | Implementado |
 | Leitura | `src/ocr/leitura.py` | Placa preparada | Texto A-Z/0-9 | Tesseract `--psm 7`, whitelist | Implementado (demonstrativo) |
 | Saída visual | `src/main.py` | Etapas anteriores | `Data/results/resultado_final.jpg` | | Implementado |
-| Avaliação de localização (IoU) | `src/avaliacao/metricas.py` | Caixa prevista e cantos anotados | IoU por imagem | | `[PENDENTE]` |
-| Experimentos de binarização e morfologia | `src/experimentos/` | Recortes de referência | Tabelas de indicadores | | `[PENDENTE]` |
+| Experimento 1 | `src/experimentos/exp01.py` | Imagens com anotação original | `resultados_exp01.csv` e figuras | Otsu simples contra pipeline completo | Implementado |
+| Execução em lote | `src/main.py` | 50 imagens de `test` | `resultados_pipeline.csv` e uma figura por imagem | | Implementado |
+| Avaliação de localização (IoU) | `src/avaliacao/metricas.py` | Caixa prevista e cantos anotados | IoU por imagem | | Planejado para a M3 |
 
 ### 4.3 Etapas pendentes
 
@@ -122,19 +123,19 @@ Ponto de entrada: `src/main.py`, executado diretamente ou pelo `Dockerfile`.
 
 ### 5.1 Segmentação
 
-Localização da placa (YOLOv8n). A função de separar a região da placa do restante da imagem, que na proposta da M1 seria feita por segmentação clássica, é realizada por um detector de objetos. O YOLOv8n é a menor variante da família YOLOv8; foi ajustado a partir de pesos pré-treinados no COCO, que não possui a classe placa, usando as caixas derivadas dos cantos anotados do RodoSol-ALPR. A saída é uma caixa delimitadora retangular, que equivale a uma segmentação da placa por região retangular. O limiar de confiança 0,5 descarta detecções fracas. `[PENDENTE: equipe justificar a escolha da variante n e do limiar 0,5]`
+Localização da placa (YOLOv8n). A função de separar a região da placa do restante da imagem, que na proposta da M1 seria feita por segmentação clássica, é realizada por um detector de objetos. O YOLOv8n é a menor variante da família YOLOv8; foi ajustado a partir de pesos pré-treinados no COCO, que não possui a classe placa, usando as caixas derivadas dos cantos anotados do RodoSol-ALPR. A saída é uma caixa delimitadora retangular, que equivale a uma segmentação da placa por região retangular. A variante n é a mais leve da família, o que reduz o custo de treino e de inferência. O limiar de confiança 0,5 descarta detecções fracas.
 
 Realce com CLAHE. A equalização adaptativa de histograma com limite de contraste opera em blocos (8x8) e limita a amplificação (clipLimit 2,0), realçando caracteres em placas escuras ou com iluminação desigual sem amplificar excessivamente o ruído.
 
 Filtro bilateral. Suaviza o ruído preservando bordas, pois pondera os vizinhos pela distância espacial e pela diferença de intensidade. Isso mantém a borda entre caractere e fundo, que é o que a binarização precisa separar.
 
-Limiar adaptativo gaussiano. Cada pixel é comparado com a média ponderada gaussiana de uma vizinhança 19x19, menos a constante C = 9. Isso tolera variação de iluminação ao longo da placa, ao contrário de um limiar global. Com `THRESH_BINARY_INV`, os caracteres (escuros) viram primeiro plano branco. O experimento 1 compara essa escolha com o limiar global de Otsu. `[PENDENTE: confirmar experimento]`
+Limiar adaptativo gaussiano. Cada pixel é comparado com a média ponderada gaussiana de uma vizinhança 19x19, menos a constante C = 9. Isso tolera variação de iluminação ao longo da placa, ao contrário de um limiar global. Com `THRESH_BINARY_INV`, os caracteres (escuros) viram primeiro plano branco. No experimento 1, o pipeline com esse limiar teve resultado inferior a um Otsu simples (seção 6).
 
 ### 5.2 Morfologia
 
-Fechamento 2x2. Dilatação seguida de erosão com elemento retangular 2x2. Fecha pequenas falhas e interrupções nos traços dos caracteres após a binarização, sem alterar de forma relevante a espessura dos traços. O experimento 2 avalia o efeito de remover essa etapa. `[PENDENTE: confirmar experimento]`
+Fechamento 2x2. Dilatação seguida de erosão com elemento retangular 2x2. Fecha pequenas falhas e interrupções nos traços dos caracteres após a binarização, sem alterar de forma relevante a espessura dos traços. A comparação com e sem essa etapa ficou para a M3.
 
-Correção de inclinação. Estima o ângulo do menor retângulo rotacionado que contém todos os pixels brancos da máscara e rotaciona a imagem para alinhá-la. Ressalvas identificadas na revisão do código: as coordenadas vêm de `np.where` na ordem (linha, coluna), e a regra `angle < -45` corresponde à convenção de ângulo do OpenCV anterior à versão 4.5.1. O ângulo também pode ser dominado pela moldura da placa ou por ruído. `[PENDENTE: verificar o comportamento em imagens inclinadas e corrigir se necessário]`
+Correção de inclinação. Estima o ângulo do menor retângulo rotacionado que contém todos os pixels brancos da máscara e rotaciona a imagem para alinhá-la. Ressalvas identificadas na revisão do código: as coordenadas vêm de `np.where` na ordem (linha, coluna), e a regra `angle < -45` corresponde à convenção de ângulo do OpenCV anterior à versão 4.5.1. O ângulo também pode ser dominado pela moldura da placa ou por ruído. A etapa não foi incluída no experimento 1, e sua verificação em placas inclinadas fica para a M3.
 
 Inversão final. O Tesseract tem melhor desempenho com texto escuro sobre fundo claro, por isso a máscara é invertida antes da leitura.
 
@@ -160,52 +161,87 @@ Leitura com Tesseract. Modo `--psm 7` (uma linha de texto) e lista de caracteres
 
 ### 6.1 Experimento 1
 
-`[PENDENTE: resumo e link para experimentos/exp01.md]`
+Pergunta: um limiar global de Otsu aplicado diretamente ao recorte da placa produz leitura melhor que o pré-processamento completo do pipeline (CLAHE, filtro bilateral, limiar adaptativo, fechamento e inversão)?
+
+As duas configurações foram aplicadas aos mesmos 50 recortes do YOLO, de imagens do subconjunto `cars-br` (IDs em `Data/splits/avaliacao_ids.txt`), com o mesmo OCR e a mesma referência (campo `plate`). Registro completo, comando de execução e casos em [experimentos/exp01.md](experimentos/exp01.md).
 
 ### 6.2 Experimento 2
 
-`[PENDENTE: resumo e link para experimentos/exp02.md]`
+Não realizado na M2. A comparação com e sem o fechamento morfológico, com o restante do pipeline constante, foi transferida para a M3, junto com a comparação isolada do tipo de limiar.
 
 ### 6.3 Tabela consolidada
 
 | Experimento | Configuração | Imagens | Indicador | Resultado |
 |---|---|---|---|---|
+| 1 | A: Otsu simples | 50 (`cars-br`) | Acerto exato | 20/50 (40%) |
+| 1 | A: Otsu simples | 50 (`cars-br`) | Acerto por caractere (1 - CER) | 74,3% |
+| 1 | B: pipeline completo | 50 (`cars-br`) | Acerto exato | 6/50 (12%) |
+| 1 | B: pipeline completo | 50 (`cars-br`) | Acerto por caractere (1 - CER) | 48,3% |
+| Pipeline | YOLO + pipeline completo | 50 (`test`) | Imagens com placa detectada | 50/50 |
+| Pipeline | YOLO + pipeline completo | 50 (`test`) | Leituras vazias | 30/50 |
+
+As 50 imagens do pipeline não têm o texto de referência no CSV gerado, por isso só a detecção e as leituras vazias são contabilizadas. A detecção em todas as imagens não garante que o recorte esteja correto, pois o IoU não foi calculado; essa avaliação está planejada para a M3.
 
 ### 6.4 Análise
 
-`[PENDENTE]`
+O Otsu simples superou o pipeline completo em 28 pontos percentuais no acerto exato e em 26 no acerto por caractere, e gerou metade das leituras vazias. Nas saídas do pipeline, o limiar adaptativo com janela 19x19 realça a moldura, os parafusos e a faixa superior da placa, que o Tesseract passa a tratar como texto. O resultado contraria a escolha atual do pipeline e motiva revisá-la na M3. Como as configurações diferem em várias etapas, o experimento não isola o efeito do tipo de limiar.
+
+Mesmo no melhor caso, 60% das placas foram lidas com erro. Um terço dos erros do Otsu é de um único caractere, a maioria confusões entre Q e O ou entre D e 0, letras que diferem por poucos pixels em recortes de cerca de 120x40 pixels.
+
+No pipeline, as leituras vazias se concentram nas imagens com ID a partir de 5000 (25 de 35, contra 5 de 15 abaixo de 5000). Hipótese, não verificada na M2: essas imagens pertencem aos subconjuntos Mercosul e de motocicletas, que o OCR em linha única não trata.
+
+Caso de sucesso: `img_001101` (`PPR1476`), lida corretamente. Caso de falha: `img_000996` (`QRC5076`), placa vermelha com caracteres brancos, cuja polaridade inversa não é tratada por nenhuma das configurações. Detalhes em [experimentos/exp01.md](experimentos/exp01.md#6-caso-de-sucesso).
+
+![Pipeline em img_001101: detecção, recorte e placa binarizada, com leitura PPR1476](figuras/pipeline_sucesso_img_001101.png)
+
+Figura 1. Caso de sucesso, `img_001101`. Da esquerda para a direita: detecção do YOLO, recorte da placa e saída do pré-processamento, lida como `PPR1476`. A binarização separa os sete caracteres da moldura, e o ruído restante na faixa superior é pequeno demais para interferir no OCR.
+
+![Pipeline em img_000996: placa vermelha QRC5076 lida como GRC076](figuras/pipeline_falha_img_000996.png)
+
+Figura 2. Caso de falha, `img_000996`. A placa vermelha tem caracteres brancos; após a binarização eles ficam brancos sobre fundo preto, polaridade inversa à das placas comuns, e a faixa superior gera manchas. O OCR leu `GRC076` no lugar de `QRC5076`.
+
+Outras falhas analisadas, com figuras, estão em [experimentos/exp01.md](experimentos/exp01.md#7-caso-de-falha-ou-limitação).
 
 ## 7. Falhas, limitações e riscos
 
-Riscos conhecidos antes dos experimentos estão listados em [proposta.md, seção 9](proposta.md#9-riscos).
+Riscos conhecidos antes dos experimentos estão listados em [proposta.md, seção 9](proposta.md#9-riscos). Falhas e limitações observadas:
 
-`[PENDENTE: falhas observadas nos experimentos, com IDs das imagens e figuras]`
+- Polaridade invertida: placas vermelhas com caracteres brancos (`img_000996`) não são tratadas, pois as duas configurações pressupõem caractere escuro sobre fundo claro.
+- Confusão entre caracteres de forma parecida: Q e O, D e 0. Em recortes de cerca de 120x40 pixels essas letras diferem por poucos pixels.
+- Ruído da moldura e da faixa superior: no pipeline completo, o limiar adaptativo transforma moldura, parafusos e a inscrição da cidade em regiões que o OCR trata como texto ou que levam a leitura vazia.
+- Leituras vazias: 30 de 50 no pipeline, concentradas nas imagens com ID a partir de 5000.
+- Cobertura da avaliação: o experimento 1 usa apenas 50 imagens de `cars-br`; Mercosul e motocicletas não foram avaliados.
+- Detector: o conjunto `test` foi usado também como validação no treino, e o IoU não foi calculado.
+- Correção de inclinação: não verificada em placas inclinadas.
 
 ## 8. Plano de conclusão para a M3
 
-Responsáveis sugeridos com base na divisão de papéis da revisão da M1 (Gustavo: segmentação e morfologia; Kauan: métricas e experimentos; João: dados, descritores e documentação). `[PENDENTE: equipe confirmar responsáveis e prazos]`
+Divisão de papéis mantida da M2: João no desenvolvimento do código, Gustavo nos testes e experimentos, Kauan na documentação.
 
 | Tarefa | Responsável | Prazo | Evidência esperada |
 |---|---|---|---|
-| Adotar a divisão oficial do RodoSol-ALPR e retreinar o detector com validação separada | João | `[PENDENTE]` | `data.yaml`, IDs em `Data/splits/`, `results.csv` do treino |
-| Avaliar a localização no conjunto de teste completo | Kauan | `[PENDENTE]` | CSV com IoU por imagem, IoU médio e taxa de localização por subconjunto |
-| Corrigir a correção de inclinação ou substituir por retificação de perspectiva | Gustavo | `[PENDENTE]` | Comparação antes/depois em placas inclinadas |
-| Segmentar caracteres por componentes conectados | Gustavo | `[PENDENTE]` | Imagens rotuladas e erro de contagem contra 7 caracteres |
-| Extrair descritores e filtrar componentes | João | `[PENDENTE]` | Tabela de descritores e taxa de componentes corretos |
-| Tratar placas de motocicleta em duas linhas | Kauan | `[PENDENTE]` | Acerto de leitura separado por subconjunto |
-| Avaliar a leitura (acerto exato e por caractere) | Kauan | `[PENDENTE]` | CSV de leitura por imagem |
-| Relatório final e vídeo da M3 | Todos | `[PENDENTE]` | `docs/relatorio_m3.md`, link no README |
+| Adotar a divisão oficial do RodoSol-ALPR e retreinar o detector com validação separada | João | Entrega da M3 | `data.yaml`, IDs em `Data/splits/`, `results.csv` do treino |
+| Revisar a binarização (Otsu ou adaptativo com janela maior) e tratar placas de polaridade invertida | João | Entrega da M3 | Código em `src/pre_processamento/` e nova execução do experimento 1 |
+| Segmentar caracteres por componentes conectados e extrair descritores de forma | João | Entrega da M3 | Imagens rotuladas, tabela de descritores e erro de contagem contra 7 caracteres |
+| Corrigir a correção de inclinação ou substituir por retificação de perspectiva | João | Entrega da M3 | Comparação antes/depois em placas inclinadas |
+| Comparação isolada do tipo de limiar e experimento com e sem fechamento | Gustavo | Entrega da M3 | `docs/experimentos/exp02.md` e CSVs de resultado |
+| Avaliar a localização (IoU) no conjunto de teste | Gustavo | Entrega da M3 | CSV com IoU por imagem, IoU médio e taxa de localização |
+| Avaliar a leitura por subconjunto, incluindo Mercosul e motocicletas | Gustavo | Entrega da M3 | Acerto exato e por caractere por subconjunto |
+| Relatório final, README e vídeo da M3 | Kauan | Entrega da M3 | `docs/relatorio_m3.md`, link do vídeo no README |
 
 ## 9. Contribuições dos integrantes
 
-`[PENDENTE: equipe preencher, ver docs/contribuicoes.md]`
+Registro detalhado em [contribuicoes.md](contribuicoes.md).
 
 | Integrante | Contribuições | Evidências |
 |---|---|---|
+| João Vitor Loch Martins | Desenvolvimento do código principal: preparação do dataset, treino do detector, pré-processamento, OCR, pipeline, Docker e experimento 1; obtenção do dataset | `src/`, `Dockerfile`, `separar_amostras.py`, `Models/Deteccao_placa/best.pt`; commits de 26 e 27/10/2026 |
+| Gustavo Odilon da Costa | Testes do pipeline e do experimento 1: execução, conferência das leituras com a referência e análise dos casos de sucesso e de falha | `Data/results/`, `docs/experimentos/exp01.md` |
+| Kauan Rocha Dalfovo | Documentação: revisão da M1, estrutura do repositório, proposta, dados, relatório, decisões, roteiro e README | `docs/`, `README.md`, `revisao_m1_plano_m2.md`; commits de 15/09 e 27/10/2026 |
 
 ## 10. Referências
 
-1. LAROCA, R. et al. On the Cross-dataset Generalization in License Plate Recognition. In: VISAPP, 2022. (Artigo de apresentação do RodoSol-ALPR.) `[PENDENTE: conferir a referência completa no repositório do dataset]`
+1. LAROCA, R. et al. On the Cross-dataset Generalization in License Plate Recognition. In: VISAPP, 2022. (Artigo de apresentação do RodoSol-ALPR.)
 2. RodoSol-ALPR Dataset. https://github.com/raysonlaroca/rodosol-alpr-dataset
 3. JOCHER, G.; CHAURASIA, A.; QIU, J. Ultralytics YOLOv8. 2023. https://github.com/ultralytics/ultralytics (licença AGPL-3.0)
 4. SMITH, R. An Overview of the Tesseract OCR Engine. In: ICDAR, 2007.
@@ -216,4 +252,4 @@ Responsáveis sugeridos com base na divisão de papéis da revisão da M1 (Gusta
 
 ## 11. Declaração de uso de IA generativa
 
-`[PENDENTE: ver docs/uso_ia.md]`
+Ver [uso_ia.md](uso_ia.md).

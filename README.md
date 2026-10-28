@@ -7,7 +7,7 @@
 | Item | Link |
 |---|---|
 | Vídeo M1 | https://youtu.be/FeMPxT-Z_Ko |
-| Vídeo M2 | |
+| Vídeo M2 | Não produzido na M2 (ver decisão D12 em [docs/decisoes.md](docs/decisoes.md)) |
 | Proposta revisada | [docs/proposta.md](docs/proposta.md) |
 | Relatório M2 | [docs/relatorio_m2.md](docs/relatorio_m2.md) |
 | Revisão da M1 | [revisao_m1_plano_m2.md](revisao_m1_plano_m2.md) |
@@ -49,8 +49,9 @@ Detalhes em [docs/proposta.md](docs/proposta.md).
 | Pré-processamento da placa (CLAHE, bilateral, limiar adaptativo, inclinação, fechamento) | Implementado |
 | Leitura com Tesseract | Implementado, uso demonstrativo |
 | Execução em Docker | Implementado |
-| Avaliação de localização (IoU) | `[PENDENTE]` |
-| Experimentos de binarização e morfologia | `[PENDENTE]` |
+| Experimento 1: Otsu simples contra pipeline completo | Implementado, `src/experimentos/exp01.py` |
+| Avaliação de localização (IoU) | Planejado para a M3 |
+| Experimento 2: com e sem fechamento morfológico | Planejado para a M3 |
 | Segmentação de caracteres e descritores | Planejado para a M3 |
 | Avaliação da leitura | Planejado para a M3 |
 
@@ -58,7 +59,7 @@ Detalhes em [docs/proposta.md](docs/proposta.md).
 O usuário fornece uma imagem de veículo. O detector YOLOv8n ajustado localiza a placa, a região é recortada e passa por realce de contraste (CLAHE), filtro bilateral, limiar adaptativo, correção de inclinação e fechamento morfológico. A placa preparada é lida pelo Tesseract. O pipeline completo está descrito na seção 4 de [docs/relatorio_m2.md](docs/relatorio_m2.md). A versão da M1, que previa pré-processar a imagem inteira antes da detecção, está preservada no histórico do repositório.
 
 ### Tecnologias usadas
-Python 3.11 (imagem Docker), OpenCV para o processamento de imagens, NumPy, Matplotlib para as figuras, Ultralytics 8.3.163 (YOLOv8n) para a detecção e Tesseract com pytesseract para a leitura. O ambiente é executado em Docker. Versões das bibliotecas em [requirements.txt](requirements.txt). `[PENDENTE: fixar as versões das demais bibliotecas]`
+Python 3.11 (imagem Docker), OpenCV para o processamento de imagens, NumPy, Matplotlib para as figuras, Ultralytics 8.3.163 (YOLOv8n) para a detecção e Tesseract com pytesseract para a leitura. O ambiente é executado em Docker. Dependências em [requirements.txt](requirements.txt); o ultralytics está fixado na versão 8.3.163 e as demais bibliotecas são instaladas na versão mais recente ao construir a imagem.
 
 ### Conjunto de dados
 O conjunto de dados usados para o treinamento do modelo de IA e a validação dos resultados do sistema será o RodoSol-ALPR, um dataset brasileiro coletado pela UFPR em paradas de pedágio ao longo da ES-060 no Espirito Santo. O Dataset conta com 20.000 imagens de carros e motocicletas com anotações dos quatro cantos da placa, se a placa é no padrão Brasileiro ou Mercosul, e a combinação de letras e numeros escrita na placa. O Dataset já foi obtido através do contato do aluno João Vitor Loch Martins com os pesquisadores do Dataset e foi assinado um "license-agreement" para o uso academico dos dados. 
@@ -71,9 +72,13 @@ Link do github do dataset: https://github.com/raysonlaroca/rodosol-alpr-dataset
 |   README.md
 |   requirements.txt
 |   revisao_m1_plano_m2.md
+|   separar_amostras.py
 |
 +---Data
 |   +---Datasets          (não versionado)
+|   +---imagens_testes    (amostra de 100 imagens)
+|   |   +---dataset_original
+|   |   \---yolo
 |   +---splits
 |   \---results
 |       +---exp01
@@ -111,24 +116,31 @@ docker build -t alpr-projeto .
 ```
 
 ### Execução
-O dataset não é copiado para a imagem Docker. Ele deve estar em `Data/Datasets` e é montado como volume na execução, junto com a pasta de resultados.
+A execução usa a amostra de imagens versionada em `Data/imagens_testes/` e não precisa do dataset completo. A pasta de resultados é montada como volume para que as saídas fiquem na máquina.
 
 Execute o seguinte comando na raiz do projeto:
 
 ```bash
-docker run --rm --name execucao-alpr -v "${PWD}/Data/Datasets:/app/Data/Datasets" -v "${PWD}/Data/results:/app/Data/results" alpr-projeto
+docker run --rm --name execucao-alpr -v "${PWD}/Data/results:/app/Data/results" alpr-projeto
 ```
 
+O `src/main.py` executa o pipeline nas 50 imagens de `Data/imagens_testes/yolo/images` e, em seguida, o experimento 1 nas 50 imagens de `Data/imagens_testes/dataset_original`.
+
 ### Exemplo Mínimo
-Pré-requisito: dataset preparado em `Data/Datasets` conforme [docs/dados.md](docs/dados.md).
 
 | Item | Valor |
 |---|---|
-| Entrada | `Data/Datasets/test/images/img_000002.jpg` (definida em `src/main.py`) |
+| Entrada | `Data/imagens_testes/dataset_original/img_003207.jpg` e sua anotação `img_003207.txt` |
 | Comando | `docker run` da seção Execução |
-| Saída no console | `RESULTADO FINAL - PLACA DETECTADA: <texto>` |
-| Saída em arquivo | `Data/results/resultado_final.jpg` com detecção, recorte e placa processada |
-| Texto esperado | `PPC5431` (campo `plate` da anotação original; carro, placa no padrão brasileiro antigo) |
+| Saída do pipeline | `Data/results/pipeline/resultados_pipeline.csv` e uma figura `result_img_*.jpg` por imagem, com detecção, recorte e placa processada |
+| Saída do experimento | `Data/results/exp01/resultados_exp01.csv` e figuras de comparação em `docs/figuras/` |
+| Resultado esperado | Linha `img_003207.jpg` em `resultados_exp01.csv` com referência `PPW3952` e leitura `PPW3952` nas duas configurações |
 
 ### Resultados
-`[PENDENTE: resumo dos indicadores e link para a seção 6 de docs/relatorio_m2.md]`
+
+| Indicador (experimento 1, 50 imagens de `cars-br`) | Otsu simples | Pipeline completo |
+|---|---:|---:|
+| Acerto exato da leitura | 40% | 12% |
+| Acerto por caractere (1 - CER) | 74,3% | 48,3% |
+
+O pipeline detectou placa nas 50 imagens da amostra de teste, com 30 leituras vazias. Análise completa na seção 6 de [docs/relatorio_m2.md](docs/relatorio_m2.md) e em [docs/experimentos/exp01.md](docs/experimentos/exp01.md).

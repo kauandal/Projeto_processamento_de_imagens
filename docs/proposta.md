@@ -1,7 +1,5 @@
 # Proposta Técnica Revisada
 
-> Convenção deste documento: trechos marcados com `[PENDENTE: ...]` dependem de resultados experimentais ou de confirmação da equipe e devem ser preenchidos antes da entrega.
-
 ## 1. Problema
 
 Sistemas de monitoramento de veículos (pedágios, estacionamentos, controle de acesso) dependem de operadores humanos para identificar placas em imagens de câmera, o que gera custo e erro. O problema investigado é o reconhecimento automático de placas brasileiras (ALPR) em imagens estáticas: localizar a placa no quadro e ler sua sequência de caracteres.
@@ -51,10 +49,10 @@ Desenvolver um pipeline que receba uma imagem de veículo, localize a placa, pre
 
 | Critério | Indicador | Meta |
 |---|---|---|
-| Localização da placa | IoU entre a caixa prevista e a caixa obtida dos 4 cantos anotados | IoU médio `[PENDENTE: meta da equipe]` |
-| Taxa de localização correta | Proporção de imagens com IoU >= 0,5 (critério usual em detecção de objetos) | `[PENDENTE: meta da equipe]` |
-| Qualidade da binarização | Proporção de placas cuja leitura coincide exatamente com o texto anotado e acerto por caractere | `[PENDENTE: meta da equipe]` |
-| Segmentação de caracteres (M3) | Erro de contagem de componentes em relação aos 7 caracteres esperados | `[PENDENTE: meta da equipe]` |
+| Localização da placa | IoU entre a caixa prevista e a caixa obtida dos 4 cantos anotados | IoU médio >= 0,7 (M3) |
+| Taxa de localização correta | Proporção de imagens com IoU >= 0,5 (critério usual em detecção de objetos) | >= 95% (M3) |
+| Qualidade da binarização | Proporção de placas cuja leitura coincide exatamente com o texto anotado e acerto por caractere | Linha de base da M2: 40% e 74,3%. Meta da M3: superar a linha de base |
+| Segmentação de caracteres (M3) | Erro de contagem de componentes em relação aos 7 caracteres esperados | Contagem correta em pelo menos 80% das placas de uma linha (M3) |
 
 ## 7. Pipeline proposto
 
@@ -67,19 +65,14 @@ Desenvolver um pipeline que receba uma imagem de veículo, localize a placa, pre
 
 Etapas planejadas para a M3: segmentação de caracteres por componentes conectados, filtragem por descritores de forma, retificação da placa por transformação de perspectiva e avaliação sistemática da leitura.
 
-Experimentos propostos para a M2 `[PENDENTE: confirmar escolha da equipe]`:
-
-- Experimento 1: limiar adaptativo gaussiano (configuração atual) contra limiar global de Otsu, aplicados aos mesmos recortes de placa.
-- Experimento 2: pré-processamento com e sem o fechamento morfológico 2x2.
-
-Para isolar o efeito do pré-processamento dos erros do detector, os recortes dos experimentos 1 e 2 devem ser obtidos a partir dos cantos anotados, e não da caixa prevista pelo YOLO.
+Experimento realizado na M2: Otsu simples contra o pré-processamento completo do pipeline, aplicados aos mesmos 50 recortes do YOLO (ver [experimentos/exp01.md](experimentos/exp01.md)). Ficam para a M3 a comparação isolada do tipo de limiar e o experimento com e sem fechamento morfológico.
 
 ## 8. Mudanças desde a M1
 
 | Item | M1 | M2 | Justificativa | Evidência |
 |---|---|---|---|---|
 | Escopo | Pré-processamento, detecção, retificação e OCR, com possível extensão a vídeo | Imagens estáticas, uma placa por imagem, foco em localização e preparação da placa | Feedback 1 da M1 (escopo amplo) | Seção 4 deste documento |
-| Ordem do pipeline | Pré-processamento da imagem inteira antes da detecção | Detecção primeiro; pré-processamento aplicado só ao recorte da placa | `[PENDENTE: equipe confirmar motivo]` | `src/main.py` |
+| Ordem do pipeline | Pré-processamento da imagem inteira antes da detecção | Detecção primeiro; pré-processamento aplicado só ao recorte da placa | O detector usa a imagem colorida original; binarizar antes eliminaria informação usada por ele (decisão D2) | `src/main.py` |
 | Métricas | Não definidas | IoU, taxa de localização correta, acerto de leitura | Feedback 3 da M1 | Seção 6 deste documento |
 | Implementação | Pastas vazias | Pipeline executável com YOLO, PDI e OCR, em Docker | Feedbacks 5 e 6 da M1 | `src/`, `Dockerfile` |
 | Documentação | Concentrada no README | Proposta, relatório, dados e decisões em `docs/` | Feedback 7 da M1 | `docs/` |
@@ -92,7 +85,7 @@ Para isolar o efeito do pré-processamento dos erros do detector, os recortes do
 | Divisão treino/teste aleatória sem semente e sem conjunto de validação separado | Resultados não reproduzíveis e possivelmente otimistas | Adotar a divisão oficial do RodoSol-ALPR e registrar os IDs em `Data/splits/` |
 | Placas de motocicleta em duas linhas | Falha sistemática do OCR em modo de linha única | Separar resultados por subconjunto; tratar na M3 |
 | Correção de inclinação baseada em `minAreaRect` sobre todos os pixels brancos | Ângulo dominado pela moldura ou por ruído | Avaliar casos inclinados; considerar retificação pelos 4 cantos na M3 |
-| Restrição de licença do dataset | Imagens não podem ser publicadas | Versionar apenas IDs, código e resultados agregados |
+| Restrição de licença do dataset | Uso das imagens limitado à finalidade acadêmica | Versionar apenas a amostra de 100 imagens necessária à execução; dataset completo fora do repositório |
 | Dependência de GPU para treino | Só um integrante consegue treinar | Versionar o modelo treinado e os registros do treino |
 
 ## 10. Referências

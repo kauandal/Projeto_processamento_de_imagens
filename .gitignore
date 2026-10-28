@@ -1,7 +1,4 @@
 Data/Datasets/*
-Data/results/exp01/*
-Data/results/pipeline/*
-docs/figuras/*
 !Data/Datasets/.gitkeep
 
 __pycache__/
