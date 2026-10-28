@@ -1,0 +1,4 @@
+type: car
+plate: PPO3623
+layout: Brazilian
+corners: 514,399 643,398 645,441 513,443

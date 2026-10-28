@@ -1,0 +1,4 @@
+type: car
+plate: OMM9399
+layout: Brazilian
+corners: 772,276 907,272 911,319 775,322

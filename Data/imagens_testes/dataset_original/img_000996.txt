@@ -1,0 +1,4 @@
+type: car
+plate: QRC5076
+layout: Brazilian
+corners: 555,396 680,397 681,437 557,435

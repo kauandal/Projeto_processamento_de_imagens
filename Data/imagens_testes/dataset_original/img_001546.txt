@@ -1,0 +1,4 @@
+type: car
+plate: OYJ1146
+layout: Brazilian
+corners: 576,390 703,390 703,436 576,436

@@ -1,0 +1,4 @@
+type: car
+plate: QRB5872
+layout: Brazilian
+corners: 728,330 860,328 861,376 727,374

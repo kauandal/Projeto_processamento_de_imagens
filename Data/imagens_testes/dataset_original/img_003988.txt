@@ -1,0 +1,4 @@
+type: car
+plate: MTO8721
+layout: Brazilian
+corners: 893,218 1001,217 1002,254 892,256

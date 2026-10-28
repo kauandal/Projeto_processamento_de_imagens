@@ -1,0 +1,4 @@
+type: car
+plate: MPI7944
+layout: Brazilian
+corners: 699,248 797,249 797,285 698,286

@@ -1,0 +1,4 @@
+type: car
+plate: ODR7843
+layout: Brazilian
+corners: 841,137 932,136 932,168 842,169

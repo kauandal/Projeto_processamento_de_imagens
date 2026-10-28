@@ -1,0 +1,4 @@
+type: car
+plate: LSB4203
+layout: Brazilian
+corners: 932,222 1040,220 1041,257 932,258

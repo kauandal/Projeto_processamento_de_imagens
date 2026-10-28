@@ -1,0 +1,4 @@
+type: car
+plate: GTT0358
+layout: Brazilian
+corners: 615,420 729,420 731,458 615,458

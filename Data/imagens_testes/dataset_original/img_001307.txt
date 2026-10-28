@@ -1,0 +1,4 @@
+type: car
+plate: MPH9172
+layout: Brazilian
+corners: 550,318 665,318 666,358 551,357

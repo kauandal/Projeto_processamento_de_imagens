@@ -1,0 +1,4 @@
+type: car
+plate: QPU5730
+layout: Brazilian
+corners: 596,365 717,364 718,406 596,406

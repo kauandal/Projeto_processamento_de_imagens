@@ -1,0 +1,4 @@
+type: car
+plate: MSO3806
+layout: Brazilian
+corners: 671,326 780,326 780,357 671,360

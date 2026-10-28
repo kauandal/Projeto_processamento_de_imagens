@@ -1,0 +1,4 @@
+type: car
+plate: PYB9462
+layout: Brazilian
+corners: 648,270 750,269 751,305 649,304

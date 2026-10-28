@@ -1,0 +1,4 @@
+type: car
+plate: PPS5641
+layout: Brazilian
+corners: 805,336 937,332 938,376 805,379

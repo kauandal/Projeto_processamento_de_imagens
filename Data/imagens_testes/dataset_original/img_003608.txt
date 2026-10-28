@@ -1,0 +1,4 @@
+type: car
+plate: KYZ9625
+layout: Brazilian
+corners: 771,330 909,329 911,375 772,376

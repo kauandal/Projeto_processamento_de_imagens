@@ -1,0 +1,4 @@
+type: car
+plate: MSG4458
+layout: Brazilian
+corners: 751,351 882,350 885,395 751,395

@@ -1,0 +1,4 @@
+type: car
+plate: MRH9491
+layout: Brazilian
+corners: 823,328 959,323 963,369 825,373

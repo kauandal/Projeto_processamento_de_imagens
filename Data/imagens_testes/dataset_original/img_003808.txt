@@ -1,0 +1,4 @@
+type: car
+plate: PPS6712
+layout: Brazilian
+corners: 903,153 996,150 999,180 906,184

@@ -1,0 +1,4 @@
+type: car
+plate: MRN2932
+layout: Brazilian
+corners: 820,350 956,348 957,396 821,397

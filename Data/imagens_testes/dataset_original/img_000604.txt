@@ -1,0 +1,4 @@
+type: car
+plate: PPT6253
+layout: Brazilian
+corners: 577,405 708,403 712,448 580,449

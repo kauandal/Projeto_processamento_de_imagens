@@ -1,0 +1,4 @@
+type: car
+plate: PPY3803
+layout: Brazilian
+corners: 748,179 835,178 835,208 748,209

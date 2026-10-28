@@ -1,0 +1,4 @@
+type: car
+plate: OYI1980
+layout: Brazilian
+corners: 517,402 642,401 645,447 520,445

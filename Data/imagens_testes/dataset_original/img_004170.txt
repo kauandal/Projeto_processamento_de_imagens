@@ -1,0 +1,4 @@
+type: car
+plate: ODE4740
+layout: Brazilian
+corners: 799,303 927,303 931,346 800,346

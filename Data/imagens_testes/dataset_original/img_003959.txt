@@ -1,0 +1,4 @@
+type: car
+plate: QRB2791
+layout: Brazilian
+corners: 956,149 1051,145 1053,179 957,182
